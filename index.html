@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PromptPakke — AI-prompts som faktisk funker</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#0a0a0a;color:#fff;}
+a{text-decoration:none;}
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 60px;border-bottom:1px solid #1a1a1a;position:sticky;top:0;background:#0a0a0aee;z-index:100;backdrop-filter:blur(10px);}
+.logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+.logo span{color:#f5a623;}
+nav ul{list-style:none;display:flex;gap:32px;}
+nav ul a{color:#aaa;font-size:14px;transition:color 0.2s;}
+nav ul a:hover{color:#fff;}
+.nav-cta{background:#f5a623;color:#000!important;padding:10px 22px;border-radius:8px;font-weight:700;font-size:14px!important;}
+.hero{padding:120px 60px 80px;max-width:1100px;margin:0 auto;text-align:center;}
+.badge{display:inline-block;background:#1a1a1a;border:1px solid #333;color:#f5a623;padding:6px 16px;border-radius:100px;font-size:13px;font-weight:600;margin-bottom:24px;}
+.hero h1{font-size:64px;font-weight:900;line-height:1.1;letter-spacing:-2px;margin-bottom:24px;}
+.hero h1 span{color:#f5a623;}
+.hero p{font-size:20px;color:#aaa;max-width:640px;margin:0 auto 40px;line-height:1.7;}
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:#f5a623;color:#000;padding:16px 36px;border-radius:10px;font-weight:800;font-size:16px;transition:all 0.2s;border:none;cursor:pointer;}
+.btn-primary:hover{background:#e09510;transform:translateY(-2px);}
+.btn-secondary{background:transparent;color:#fff;padding:16px 36px;border-radius:10px;font-weight:700;font-size:16px;border:1px solid #333;cursor:pointer;transition:all 0.2s;}
+.btn-secondary:hover{border-color:#f5a623;color:#f5a623;}
+.hero-img{width:100%;max-width:900px;margin:60px auto 0;border-radius:16px;overflow:hidden;border:1px solid #222;}
+.hero-img img{width:100%;height:480px;object-fit:cover;filter:brightness(0.85);}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;}
+.stat{padding:48px 40px;text-align:center;border-right:1px solid #1a1a1a;}
+.stat:last-child{border-right:none;}
+.stat-num{font-size:52px;font-weight:900;color:#f5a623;letter-spacing:-2px;}
+.stat-label{color:#666;font-size:15px;margin-top:8px;}
+.section{padding:100px 60px;max-width:1100px;margin:0 auto;}
+.section-dark{background:#111;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;padding:100px 60px;}
+.section-dark-inner{max-width:1100px;margin:0 auto;}
+.section-label{font-size:12px;font-weight:700;letter-spacing:3px;color:#f5a623;text-transform:uppercase;margin-bottom:16px;}
+h2.big{font-size:48px;font-weight:900;letter-spacing:-1.5px;margin-bottom:24px;}
+.sub{color:#aaa;font-size:18px;max-width:580px;line-height:1.7;margin-bottom:60px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.card{background:#111;border:1px solid #1e1e1e;border-radius:12px;padding:32px;}
+.card-dark{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:12px;padding:32px;}
+.card .icon{font-size:28px;margin-bottom:16px;}
+.card h3{font-size:20px;font-weight:700;margin-bottom:12px;}
+.card p{color:#777;line-height:1.7;font-size:15px;}
+.feature-num{font-size:13px;font-weight:700;color:#f5a623;margin-bottom:20px;}
+.full-img{width:100%;border-radius:12px;margin-top:48px;overflow:hidden;}
+.full-img img{width:100%;height:360px;object-fit:cover;border-radius:12px;filter:brightness(0.7);}
+.example-box{background:#111;border:1px solid #1e1e1e;border-radius:12px;padding:40px;}
+.example-label{font-size:12px;font-weight:700;letter-spacing:2px;color:#f5a623;margin-bottom:16px;}
+.example-prompt{font-size:15px;line-height:1.8;color:#ccc;font-family:monospace;background:#0a0a0a;padding:24px;border-radius:8px;border:1px solid #1a1a1a;}
+.example-output{margin-top:24px;}
+.example-output h4{font-size:13px;font-weight:700;color:#555;margin-bottom:12px;letter-spacing:2px;}
+.example-output p{color:#aaa;line-height:1.8;font-size:15px;font-style:italic;}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.plan{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:16px;padding:40px;position:relative;}
+.plan.popular{border-color:#f5a623;}
+.popular-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:#f5a623;color:#000;padding:4px 16px;border-radius:100px;font-size:12px;font-weight:800;white-space:nowrap;}
+.plan-name{font-size:13px;font-weight:700;color:#555;margin-bottom:16px;text-transform:uppercase;letter-spacing:2px;}
+.plan-price{font-size:52px;font-weight:900;letter-spacing:-2px;margin-bottom:4px;}
+.plan-price span{font-size:20px;font-weight:400;color:#666;}
+.plan-desc{color:#555;font-size:14px;margin-bottom:32px;}
+.plan-features{list-style:none;margin-bottom:40px;}
+.plan-features li{padding:10px 0;border-bottom:1px solid #1a1a1a;color:#aaa;font-size:14px;display:flex;align-items:center;gap:10px;}
+.plan-features li::before{content:'✓';color:#f5a623;font-weight:700;}
+.plan-btn{width:100%;padding:14px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;}
+.plan-btn.primary{background:#f5a623;color:#000;border:none;}
+.plan-btn.outline{background:transparent;color:#fff;border:1px solid #333;}
+.plan-btn:hover{transform:translateY(-2px);}
+.testi{background:#111;border:1px solid #1e1e1e;border-radius:12px;padding:32px;}
+.stars{color:#f5a623;font-size:18px;margin-bottom:16px;}
+.testi p{color:#aaa;line-height:1.8;font-size:15px;margin-bottom:24px;}
+.testi-author{display:flex;align-items:center;gap:12px;}
+.testi-avatar{width:40px;height:40px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-weight:700;color:#f5a623;font-size:14px;}
+.testi-name{font-weight:700;font-size:14px;}
+.testi-title{color:#555;font-size:13px;}
+.faq-item{border-bottom:1px solid #1e1e1e;padding:28px 0;}
+.faq-q{font-size:18px;font-weight:700;margin-bottom:12px;}
+.faq-a{color:#777;line-height:1.8;font-size:15px;}
+.cta-section{padding:120px 60px;text-align:center;max-width:800px;margin:0 auto;}
+.cta-section h2{font-size:56px;font-weight:900;letter-spacing:-2px;margin-bottom:24px;}
+.cta-section h2 span{color:#f5a623;}
+.cta-section p{color:#aaa;font-size:18px;margin-bottom:40px;line-height:1.7;}
+footer{border-top:1px solid #1a1a1a;padding:40px 60px;display:flex;justify-content:space-between;align-items:center;}
+footer p{color:#555;font-size:14px;}
+@media(max-width:768px){
+  nav{padding:16px 20px;}
+  nav ul{display:none;}
+  .hero{padding:60px 24px 40px;}
+  .hero h1{font-size:36px;}
+  .stats,.grid-2,.grid-3,.plans{grid-template-columns:1fr;}
+  .stat{border-right:none;border-bottom:1px solid #1a1a1a;}
+  .section,.section-dark,.cta-section{padding:60px 24px;}
+  .section-dark-inner{padding:0;}
+  h2.big{font-size:32px;}
+  footer{padding:32px 24px;flex-direction:column;gap:12px;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Prompt<span>Pakke</span></div>
+  <ul>
+    <li><a href="#eksempler">Eksempler</a></li>
+    <li><a href="#priser">Priser</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#priser" class="nav-cta">Kjøp nå</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="badge">Brukt av 400+ norske bedrifter i 2025</div>
+  <h1>Stopp å kaste tid<br>på <span>dårlige prompts</span></h1>
+  <p>200+ ferdige, testede AI-prompts som sparer deg 10 timer i uken. Markedsføring, salg, HR, kundeservice — på norsk.</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="document.getElementById('priser').scrollIntoView({behavior:'smooth'})">Se pakker fra kr 299</button>
+    <button class="btn-secondary" onclick="document.getElementById('eksempler').scrollIntoView({behavior:'smooth'})">Se eksempler gratis</button>
+  </div>
+  <div class="hero-img">
+    <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&q=80" alt="Team working with AI tools"/>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">400+</div><div class="stat-label">Norske bedrifter</div></div>
+  <div class="stat"><div class="stat-num">10t</div><div class="stat-label">Spart per uke i snitt</div></div>
+  <div class="stat"><div class="stat-num">97%</div><div class="stat-label">Fornøyde etter 30 dager</div></div>
+</div>
+
+<section class="section">
+  <div class="section-label">Problemet</div>
+  <h2 class="big">ChatGPT er kraftig.<br>Men du vet ikke hvordan du bruker det.</h2>
+  <div class="grid-2">
+    <div class="card"><div class="icon">😤</div><h3>Generiske svar som ikke passer</h3><p>Du skriver "skriv en annonse" og får noe du aldri ville publisert. Uten riktig struktur er AI ubrukelig.</p></div>
+    <div class="card"><div class="icon">⏳</div><h3>Timer med trial-and-error</h3><p>Du prøver og feiler i timevis. Ender opp med å gjøre alt manuelt likevel. Det er ikke meningen.</p></div>
+    <div class="card"><div class="icon">💸</div><h3>Konkurrentene kjøper seg forspranget</h3><p>Bedrifter som har lært seg AI-prompts produserer 5x mer innhold på halvparten av tiden. Du henger etter.</p></div>
+    <div class="card"><div class="icon">🔄</div><h3>Ingen system — starter på nytt hver gang</h3><p>Ingen struktur betyr ingen skalering. Samme tid brukt på samme oppgave, gang etter gang.</p></div>
+  </div>
+  <div class="full-img"><img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&q=80" alt="Frustrated working"/></div>
+</section>
+
+<section class="section-dark">
+  <div class="section-dark-inner">
+    <div class="section-label">Løsningen</div>
+    <h2 class="big">Kopier. Lim inn. Få resultater.</h2>
+    <p class="sub">200+ ferdige prompts bygget for norske bedrifter — testet og optimalisert for brukbare resultater første gang.</p>
+    <div class="grid-3">
+      <div class="card-dark"><div class="feature-num">01</div><h3>Ferdig strukturert</h3><p>Kontekst, rolle, format og output — du fyller bare inn bedriftsnavnet ditt.</p></div>
+      <div class="card-dark"><div class="feature-num">02</div><h3>Norsk og relevant</h3><p>Laget fra scratch for norsk marked og norske kunder. Ikke oversatt fra engelsk.</p></div>
+      <div class="card-dark"><div class="feature-num">03</div><h3>Alltid oppdatert</h3><p>Når AI-modellene forbedres, forbedrer vi promptene. Du får siste versjon uten ekstra kostnad.</p></div>
+      <div class="card-dark"><div class="feature-num">04</div><h3>Fungerer med alle verktøy</h3><p>ChatGPT, Claude, Gemini, Copilot. Universelle prompts som funker overalt.</p></div>
+      <div class="card-dark"><div class="feature-num">05</div><h3>Organisert etter use-case</h3><p>Finn riktig prompt på sekunder. Sortert etter kategori: markedsføring, salg, HR og mer.</p></div>
+      <div class="card-dark"><div class="feature-num">06</div><h3>Klar til bruk i dag</h3><p>Kjøp, last ned, bruk. Ingen ventetid. Du er i gang på under 5 minutter.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="eksempler">
+  <div class="section-label">Eksempler</div>
+  <h2 class="big">Se hva du faktisk får</h2>
+  <div class="example-box">
+    <div class="example-label">PROMPT #47 — FACEBOOK-ANNONSE</div>
+    <div class="example-prompt">Du er en erfaren copywriter spesialisert på norsk markedsføring. Skriv en Facebook-annonse for [BEDRIFTSNAVN] som selger [PRODUKT] til [MÅLGRUPPE].<br><br>Annonsen skal:<br>— Starte med en hook som stopper scrollingen<br>— Adressere det største smertepunktet til målgruppen<br>— Ha en tydelig og konkret CTA<br>— Være maks 150 ord, uformell norsk tone<br><br>Lag 3 varianter med ulike hooks.</div>
+    <div class="example-output">
+      <h4>EKSEMPEL OUTPUT</h4>
+      <p>"Slutter du å betale for leads som aldri svarer? [Bedriftsnavn] hjelper håndverkere i Bodø å fylle kalenderen med kunder som faktisk møter opp. 0 bindingstid. Gratis 14 dager. → Start nå"</p>
+    </div>
+  </div>
+  <div style="height:24px"></div>
+  <div class="example-box">
+    <div class="example-label">PROMPT #88 — TILBUDSBREV TIL NY KUNDE</div>
+    <div class="example-prompt">Skriv et profesjonelt tilbudsbrev på norsk for [BEDRIFT] til [POTENSIELLE KUNDE]. Tjenesten er [BESKRIV TJENESTE] til en pris på [PRIS].<br><br>Brevet skal:<br>— Åpne med en konkret referanse til kundens situasjon<br>— Fremheve 3 spesifikke fordeler, ikke funksjoner<br>— Inkludere sosial bevis<br>— Avslutte med ett enkelt neste steg</div>
+    <div class="example-output">
+      <h4>EKSEMPEL OUTPUT</h4>
+      <p>"Hei [Navn], etter samtalen vår forrige uke forstår jeg at dere bruker ca. 8 timer i måneden på manuell fakturering. Vi har hjulpet 40+ regnskapsbedrifter i Nord-Norge å halvere den tiden..."</p>
+    </div>
+  </div>
+</section>
+
+<section class="section-dark" id="priser">
+  <div class="section-dark-inner">
+    <div class="section-label">Priser</div>
+    <h2 class="big" style="text-align:center">Velg din pakke</h2>
+    <p class="sub" style="max-width:100%;text-align:center">Engangskjøp. Ingen abonnement. Ingen skjulte kostnader.</p>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">299 <span>kr</span></div>
+        <div class="plan-desc">For deg som vil prøve AI-prompts</div>
+        <ul class="plan-features">
+          <li>50 ferdig prompts</li>
+          <li>Markedsføring og innhold</li>
+          <li>PDF-format</li>
+          <li>Gratis oppdateringer 6 mnd</li>
+          <li>Norsk e-post support</li>
+        </ul>
+        <button class="plan-btn outline">Kjøp Starter</button>
+      </div>
+      <div class="plan popular">
+        <div class="popular-badge">Mest populær</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">599 <span>kr</span></div>
+        <div class="plan-desc">For bedrifter som vil spare tid</div>
+        <ul class="plan-features">
+          <li>200+ ferdig prompts</li>
+          <li>Alle kategorier inkludert</li>
+          <li>PDF og Notion-mal</li>
+          <li>Gratis oppdateringer for alltid</li>
+          <li>Prioritert support</li>
+          <li>Bonus: 10 e-handel prompts</li>
+        </ul>
+        <button class="plan-btn primary">Kjøp Pro — kr 599</button>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Team</div>
+        <div class="plan-price">999 <span>kr</span></div>
+        <div class="plan-desc">For team på 2-10 personer</div>
+        <ul class="plan-features">
+          <li>200+ ferdig prompts</li>
+          <li>Teamlisens — deles fritt</li>
+          <li>PDF, Notion og Google Docs</li>
+          <li>Gratis oppdateringer for alltid</li>
+          <li>Dedikert support</li>
+          <li>Bonus: Workshop-guide (kr 500)</li>
+        </ul>
+        <button class="plan-btn outline">Kjøp Team</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">Tilbakemeldinger</div>
+  <h2 class="big">Hva kundene sier</h2>
+  <div class="grid-3">
+    <div class="testi"><div class="stars">★★★★★</div><p>"Kjøpte Pro på fredag. Mandag hadde jeg skrevet 3 ukers innhold på 2 timer. Fantastisk verdi."</p><div class="testi-author"><div class="testi-avatar">MH</div><div><div class="testi-name">Marte Haugen</div><div class="testi-title">Daglig leder, Haugen Regnskap</div></div></div></div>
+    <div class="testi"><div class="stars">★★★★★</div><p>"Jeg er ikke teknisk i det hele tatt. Men med disse promptene bruker jeg ChatGPT som en proff. Verdt hver krone."</p><div class="testi-author"><div class="testi-avatar">TK</div><div><div class="testi-name">Thomas Karlsen</div><div class="testi-title">Eiendomsmegler, Nordland</div></div></div></div>
+    <div class="testi"><div class="stars">★★★★★</div><p>"Vi er et lite team på 3. Med PromptPakke Team produserer vi like mye som store byråer."</p><div class="testi-author"><div class="testi-avatar">SL</div><div><div class="testi-name">Silje Larsen</div><div class="testi-title">Gründer, Ren Digital</div></div></div></div>
+  </div>
+</section>
+
+<section class="section-dark" id="faq">
+  <div class="section-dark-inner" style="max-width:780px">
+    <div class="section-label">FAQ</div>
+    <h2 class="big">Vanlige spørsmål</h2>
+    <div class="faq-item"><div class="faq-q">Hva slags AI-verktøy trenger jeg?</div><div class="faq-a">Kun gratis ChatGPT. Du trenger ikke Plus, Claude Pro eller noe annet betalt. Alle prompts er testet på gratisversjoner.</div></div>
+    <div class="faq-item"><div class="faq-q">Fungerer dette for min bransje?</div><div class="faq-a">Ja. Vi har prompts for 20+ bransjer: håndverk, regnskap, eiendom, helse, restaurant, e-handel og mer.</div></div>
+    <div class="faq-item"><div class="faq-q">Hva er forskjellen på PDF og Notion-mal?</div><div class="faq-a">PDF er for å lese og kopiere. Notion-malen lar deg søke og filtrere alle 200+ prompts digitalt — mye mer effektivt.</div></div>
+    <div class="faq-item"><div class="faq-q">Kan jeg dele med kollegaer?</div><div class="faq-a">Starter og Pro er for én person. Team-lisensen deles fritt med opptil 10 i samme bedrift.</div></div>
+    <div class="faq-item"><div class="faq-q">Hva hvis jeg ikke er fornøyd?</div><div class="faq-a">30 dagers pengene-tilbake-garanti. Ingen spørsmål. Send e-post og vi refunderer.</div></div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <h2>Klar til å spare<br><span>10 timer hver uke?</span></h2>
+  <p>400+ norske bedrifter er allerede i gang. Det tar under 5 minutter.</p>
+  <button class="btn-primary" style="font-size:18px;padding:20px 48px;" onclick="document.getElementById('priser').scrollIntoView({behavior:'smooth'})">Start fra kr 299</button>
+</section>
+
+<footer>
+  <div class="logo">Prompt<span style="color:#f5a623">Pakke</span></div>
+  <p>© 2025 PromptPakke · Bodø, Norge</p>
+</footer>
+
+</body>
+</html>
